@@ -5,7 +5,7 @@ const Login = () => {
   return (
     <section className="flex items-center">
       <div className="gap-4 flex flex-col items-center  max-w-96 mx-auto w-full">
-        <h1 className="text-3xl font-bold">Faça seu login</h1>
+        <h1 className="text-3xl font-bold ">Faça seu login</h1>
 
         <form className="flex flex-col gap-2 w-full">
           <input
