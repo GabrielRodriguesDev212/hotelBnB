@@ -10,21 +10,21 @@ const Register = ({ setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (email && password) {
-    //   try {
-    //     const { data: userDoc } = await axios.post("/users/login", {
-    //       email,
-    //       password,
-    //     });
-    //     setUser(userDoc);
-    //     setRedirect(true);
-    //     console.log(userDoc);
-    //   } catch (error) {
-    //     alert(`Deu um erro ao logar: ${error.response.data}`);
-    //   }
-    // } else {
-    //   alert("Você precisa preencher o email e senha!!!");
-    // }
+    if (email && password && name) {
+      try {
+        const { data: userDoc } = await axios.post("/users", {
+          name,
+          email,
+          password,
+        });
+        setUser(userDoc);
+        setRedirect(true);
+      } catch (error) {
+        alert(`Deu um erro ao cadastrar: ${error.response.data}`);
+      }
+    } else {
+      alert("Você precisa preencher o nome, email e senha!!!");
+    }
   };
 
   if (redirect) return <Navigate to="/" />;
