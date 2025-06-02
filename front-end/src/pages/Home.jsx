@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div>
       <section>
-        <div className="gap-8 grid grid-cols-[repeat(auto-fit,minmax(225px,1fr))] p-8 max-w-7xl mx-auto  ">
+        <div className="mx-auto grid max-w-full grid-cols-[repeat(auto-fit,minmax(225px,1fr))] gap-8 p-8 lg:max-w-7xl">
           <Item />
           <Item />
           <Item />
