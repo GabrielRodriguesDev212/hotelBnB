@@ -5,7 +5,7 @@ import NewPlace from "./NewPlace";
 const AccPlaces = () => {
   const { action } = useParams();
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full max-w-7xl flex flex-col items-center">
       {action !== "new" ? (
         <Link
           to="/account/places/new"
