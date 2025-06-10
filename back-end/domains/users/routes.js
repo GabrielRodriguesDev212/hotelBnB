@@ -91,8 +91,11 @@ router.post('/login', async (req, res) => {
 
             if (passwordCorrect) {
                 const newObjUser = { name, email, _id }
-                const token = jwt.sign(newObjUser, JWT_SECRET_KEY)
-                res.cookie('token', token).json(newObjUser)
+                jwt.sign(newObjUser, JWT_SECRET_KEY, {}, (error, token) => {
+                    if (error) throw error;
+
+                    res.cookie('token', token).json(newObjUser)
+                })
 
 
             } else {

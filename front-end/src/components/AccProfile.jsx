@@ -23,12 +23,12 @@ const AccProfile = () => {
     <div>
       <div className="flex flex-col gap-4 items-center">
         <p>
-          Logado como: {user?.name}{" "}
+          Logado como: {user?.name}
           <span className="font-semibold">({user?.email})</span>
         </p>
         <button
           onClick={handleLogout}
-          className="min-w-44 bg-primary-400 cursor-pointer rounded-full px-4 py-2 transition text-white"
+          className="min-w-44 bg-primary-400 cursor-pointer rounded-full px-4 py-2 transition text-white hover:bg-primary-600"
         >
           Logout
         </button>
