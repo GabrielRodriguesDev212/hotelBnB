@@ -3,6 +3,7 @@ import "dotenv/config";
 import UserRoutes from "./domains/users/routes.js"
 import cors from "cors"
 import cookieParser from "cookie-parser";
+import PlaceRoutes from "./domains/places/routes.js"
 // const express2 = require('express') com require seria assim tem que jogar na const direto!!
 
 
@@ -16,6 +17,7 @@ app.use(cors({
     credentials: true,
 }))
 app.use("/users", UserRoutes)
+app.use("/places", PlaceRoutes)
 
 
 app.listen(PORT, () => {

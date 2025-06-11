@@ -5,6 +5,7 @@ const router = Router()
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import 'dotenv/config'
+import { JWTSign, JWTVerify } from "../../utils/jwt.js"
 
 
 const { JWT_SECRET_KEY } = process.env
@@ -25,22 +26,9 @@ router.get('/profile', async (req, res) => {
     const { token } = req.cookies
 
     if (token) {
-
-        jwt.verify(token, JWT_SECRET_KEY, {}, (error, userInfo) => {
-
-            if (error) throw error;
-
-
-            res.json(userInfo)
-        })
-
-    } else {
-        res.json(null)
-
+        const userInfo = await JWTVerify(req)
+        res.json(userInfo)
     }
-
-
-
 })
 
 
@@ -61,12 +49,16 @@ router.post('/', async (req, res) => {
         const { _id } = newUserDoc
         const newObjUser = { name, email, _id }
 
-        jwt.sign(newObjUser, JWT_SECRET_KEY, {}, (error, token) => {
 
-            if (error) throw error;
+
+
+        try {
+            const token = await JWTSign(newObjUser)
             res.cookie('token', token).json(newObjUser);
+        } catch (error) {
+            res.status(500).json('Erro ao assinar o JWT', error)
+        }
 
-        })
     } catch (error) {
         res.status(500).json(error)
     }
@@ -91,11 +83,15 @@ router.post('/login', async (req, res) => {
 
             if (passwordCorrect) {
                 const newObjUser = { name, email, _id }
-                jwt.sign(newObjUser, JWT_SECRET_KEY, {}, (error, token) => {
-                    if (error) throw error;
 
+                try {
+                    const token = await JWTSign(newObjUser)
                     res.cookie('token', token).json(newObjUser)
-                })
+
+                } catch (error) {
+
+                    res.status(500).json('Erro ao assinar o JWT', error)
+                }
 
 
             } else {
