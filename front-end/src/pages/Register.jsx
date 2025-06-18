@@ -59,7 +59,7 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button className="bg-primary-400 rounded-full w-full py-2 px-4 text-white font-bold cursor-pointer">
+          <button className="bg-primary-400 hover:bg-primary-600 rounded-full w-full py-2 px-4 text-white font-bold cursor-pointer transition">
             Registrar
           </button>
         </form>

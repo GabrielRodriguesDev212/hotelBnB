@@ -8,10 +8,11 @@ import 'dotenv/config'
 import { JWTSign, JWTVerify } from "../../utils/jwt.js"
 
 
-const { JWT_SECRET_KEY } = process.env
+
 const bcryptSalt = bcrypt.genSaltSync();
 router.get('/', async (req, res) => {
     connectDb();
+
     try {
         const userDoc = await User.find()
         res.json(userDoc)

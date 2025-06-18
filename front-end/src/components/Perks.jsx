@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 
-const Perks = () => {
-  const [perks, setPerks] = useState([]);
-
+const Perks = ({ perks, setPerks }) => {
   const handleClick = (target) => {
     const newPerks = target.checked
       ? [...perks, target.value]
@@ -21,6 +19,7 @@ const Perks = () => {
           id="wifi"
           value={"wifi"}
           onChange={(e) => handleClick(e.target)}
+          className="form-checkbox  "
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "jsonwebtoken": "^9.0.2"
+    "image-downloader": "^4.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mime-types": "^3.0.1",
+    "url": "^0.11.4"
   }
 }

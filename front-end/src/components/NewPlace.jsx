@@ -1,20 +1,65 @@
 import React, { useState } from "react";
 import Perks from "./Perks";
+import axios from "axios";
+import { Navigate } from "react-router-dom";
+import { useUserContext } from "../contexts/UserContext";
+import PhotoUploader from "./PhotoUploader";
 
 const NewPlace = () => {
-  const [title, setTitle] = useState();
-  const [city, setCity] = useState();
-  const [photos, setPhotos] = useState();
+  const { user } = useUserContext();
+  const [title, setTitle] = useState("");
+  const [city, setCity] = useState("");
+  const [photos, setPhotos] = useState([]);
+  const [photolink, setPhotoLink] = useState("");
   const [description, setDescription] = useState();
-  const [extras, setExtras] = useState();
-  const [price, setPrice] = useState();
-  const [checkin, setCheckin] = useState();
-  const [checkout, setCheckout] = useState();
-  const [guests, setGuests] = useState();
-
-  const handleSubmit = (e) => {
+  const [extras, setExtras] = useState("");
+  const [price, setPrice] = useState("");
+  const [checkin, setCheckin] = useState("");
+  const [checkout, setCheckout] = useState("");
+  const [guests, setGuests] = useState("");
+  const [redirect, setRedirect] = useState(false);
+  const [perks, setPerks] = useState([]);
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      title &&
+      city &&
+      photos.length > 0 &&
+      description &&
+      price &&
+      checkin &&
+      checkout &&
+      guests
+    ) {
+      console.log("Todos foram preenchidos.");
+      try {
+        const { data: newPlaceDoc } = await axios.post("/places", {
+          owner: user._id,
+          title,
+          city,
+          photos,
+          description,
+          extras,
+          perks,
+          price,
+          checkin,
+          checkout,
+          guests,
+        });
+
+        console.log(newPlaceDoc);
+        setRedirect(true);
+      } catch (error) {
+        console.log(error);
+        alert("Erro ao tentar criar um novo lugar!");
+      }
+    } else {
+      alert("Preencha todos os campos!");
+    }
   };
+
+  if (redirect) return <Navigate to="/account/places" />;
 
   return (
     <form onSubmit={handleSubmit} className="w-full px-8 flex flex-col gap-6">
@@ -25,7 +70,7 @@ const NewPlace = () => {
         <input
           type="text"
           placeholder="Digite o título do seu anúncio"
-          className="border border-gray-300 rounded-full px-4 py-2 "
+          className="border border-gray-300 rounded-full px-4 py-2"
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -46,49 +91,7 @@ const NewPlace = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-1 ">
-        <label htmlFor="photos" className="text-2xl font-bold ml-2">
-          Fotos
-        </label>
-
-        <div className="flex  gap-2">
-          <input
-            type="text"
-            placeholder="Adcione uma foto pelo link"
-            className="border border-gray-300 rounded-full px-4 py-2 grow "
-            value={photos}
-            id="photos"
-            onChange={(e) => setPhotos(e.target.value)}
-          />
-          <button className="hover:bg-gray-300 transition bg-gray-200 cursor-pointer border border-gray-300 rounded-full px-4 py-2 text-black">
-            Enviar Fotos
-          </button>
-        </div>
-
-        <div className="grid grid-cols-5 gap-4 mt-2">
-          <label
-            htmlFor="file"
-            className="cursor-pointer aspect-square rounded-2xl border border-gray-300 flex items-center justify-center gap-2 transition hover:bg-gray-100"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-              />
-            </svg>
-            Upload
-            <input type="file" id="file" className="hidden" />
-          </label>
-        </div>
-      </div>
+      <PhotoUploader {...{ photolink, setPhotoLink, setPhotos, photos }} />
 
       <div className="flex flex-col gap-1">
         <label htmlFor="description" className="text-2xl font-bold ml-2">
@@ -108,7 +111,7 @@ const NewPlace = () => {
           Comodidades
         </label>
 
-        <Perks />
+        <Perks perks={perks} setPerks={setPerks} />
       </div>
 
       <div className="flex flex-col gap-1">
@@ -145,7 +148,7 @@ const NewPlace = () => {
 
           <div className="flex flex-col gap-2">
             <label className="ml-2 text-xl font-bold" htmlFor="checkin">
-              Checkin
+              Check-in
             </label>
 
             <input
@@ -160,7 +163,7 @@ const NewPlace = () => {
 
           <div className="flex flex-col gap-2">
             <label className="ml-2 text-xl font-bold" htmlFor="checkout">
-              Checkout
+              Check-out
             </label>
 
             <input

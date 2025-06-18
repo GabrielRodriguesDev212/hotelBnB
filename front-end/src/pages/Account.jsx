@@ -1,10 +1,16 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import AccProfile from "../components/AccProfile";
 import AccPlaces from "../components/AccPlaces";
+import { useUserContext } from "../contexts/UserContext";
 
 const Account = () => {
   const { subpage } = useParams();
+  const { user, ready } = useUserContext();
+
+  if (!user && ready) {
+    return <Navigate to="/login" />;
+  }
 
   const buttonClass = (button) => {
     let finalClass =
