@@ -17,9 +17,9 @@ export const connectDb = async () => {
 }
 
 
-try {
-    mongoose.connect(MONGO_URL);
-    console.log(`O banco de dados foi conectado!`)
-} catch (error) {
-    console.log(`Deu algum erro ao conectar!`, error)
-}
+// try {
+//     mongoose.connect(MONGO_URL);
+//     console.log(`O banco de dados foi conectado!`)
+// } catch (error) {
+//     console.log(`Deu algum erro ao conectar!`, error)
+// }

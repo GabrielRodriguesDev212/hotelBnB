@@ -5,14 +5,40 @@ const PhotoUploader = ({ photolink, setPhotoLink, setPhotos, photos }) => {
   const uploadByLink = async (e) => {
     e.preventDefault();
     if (photolink) {
-      const { data: filename } = await axios.post("/places/upload/link", {
-        link: photolink,
-      });
-      setPhotos((prevValue) => [...prevValue, filename]);
+      try {
+        const { data: filename } = await axios.post("/places/upload/link", {
+          link: photolink,
+        });
+        setPhotos((prevValue) => [...prevValue, filename]);
+      } catch (error) {
+        alert("Ocorreu um erro ao enviar o link da foto. Tente novamente.");
+      }
     } else {
       alert("Não existe nenhum link a ser enviado");
     }
   };
+
+  // Função para fazer o upload de fotos selecionadas
+
+  const uploadPhoto = async (e) => {
+    const { files } = e.target;
+    const filesArray = [...files];
+    const formData = new FormData();
+
+    filesArray.forEach((file) => formData.append("files", file));
+
+    try {
+      const { data: urlArray } = await axios.post("/places/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setPhotos((prevValue) => [...prevValue, ...urlArray]);
+    } catch (error) {
+      console.error("Erro ao enviar fotos:", error);
+      alert("Ocorreu um erro ao enviar as fotos. Tente novamente.");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-1 ">
       <label htmlFor="photos" className="text-2xl font-bold ml-2">
@@ -40,7 +66,7 @@ const PhotoUploader = ({ photolink, setPhotoLink, setPhotos, photos }) => {
         {photos.map((photo) => (
           <img
             className=" aspect-square object-cover rounded-2xl border border-gray-300"
-            src={`${axios.defaults.baseURL}/tmp/${photo}`}
+            src={`${photo}`}
             alt="Imagem do Lugar"
             key={photo}
           />
@@ -65,7 +91,13 @@ const PhotoUploader = ({ photolink, setPhotoLink, setPhotos, photos }) => {
             />
           </svg>
           Upload
-          <input type="file" id="file" className="hidden" />
+          <input
+            type="file"
+            id="file"
+            className="hidden"
+            multiple
+            onChange={uploadPhoto}
+          />
         </label>
       </div>
     </div>
