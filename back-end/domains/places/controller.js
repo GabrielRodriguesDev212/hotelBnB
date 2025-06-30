@@ -11,7 +11,7 @@ const getExtension = (path) => {
     const contentType = mime.contentType(mimeType)
     const extension = mime.extension(contentType)
 
-    return extension
+    return { extension, mimeType }
 }
 
 const { S3_ACESS_KEY, S3_SECRET_KEY, BUCKET } = process.env;
@@ -51,7 +51,7 @@ export const sendToS3 = async (filename, path, mimetype) => {
 
 export const downloadImage = async (Link) => {
 
-    const extension = getExtension(Link)
+    const { extension, mimeType } = getExtension(Link)
     const destination = `${__dirname}/tmp/`
     const filename = `${Date.now()}.${extension}`;
 
@@ -66,7 +66,7 @@ export const downloadImage = async (Link) => {
 
         await download.image(options)
 
-        return { filename, fullPath };
+        return { filename, fullPath, mimeType };
 
 
 

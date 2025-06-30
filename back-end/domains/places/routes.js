@@ -7,6 +7,106 @@ import { sendToS3, uploadImage, downloadImage } from "./controller.js"
 const router = Router();
 
 
+router.get('/', async (req, res) => {
+    connectDb()
+    try {
+
+        const placeDocs = await Place.find()
+        res.json(placeDocs)
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json("Deu erro ao encontrar as comodidades")
+    }
+
+
+
+})
+
+
+router.get('/owner', async (req, res) => {
+    connectDb()
+    try {
+        const userInfo = await JWTVerify(req)
+
+        try {
+            const placeDocs = await Place.find({ owner: userInfo._id })
+            res.json(placeDocs)
+        } catch (error) {
+            console.log(error)
+            res.status(500).json("Deu erro ao encontrar o usuário")
+        }
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json("Deu erro ao verificar o usuário")
+    }
+
+
+
+})
+
+router.get('/:id', async (req, res) => {
+    connectDb()
+
+
+    const { id: _id } = req.params
+
+
+    try {
+        const placeDoc = await Place.findOne({ _id })
+        res.json(placeDoc)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json("Deu erro ao encontrar a acomodação")
+    }
+
+
+
+
+})
+
+router.put('/:id', async (req, res) => {
+    connectDb()
+    const { id: _id } = req.params
+    const {
+        title,
+        city,
+        photos,
+        description,
+        extras,
+        perks,
+        price,
+        checkin,
+        checkout,
+        guests } = req.body
+
+    try {
+
+
+
+        const updatedPlaceDoc = await Place.findOneAndUpdate({ _id }, {
+            title,
+            city,
+            photos,
+            description,
+            extras,
+            perks,
+            price,
+            checkin,
+            checkout,
+            guests
+
+        })
+
+        res.json(updatedPlaceDoc)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+
+})
 
 
 router.post('/', async (req, res) => {
@@ -108,6 +208,9 @@ router.post('/upload', uploadImage().array('files', 10), async (req, res) => {
 
     res.json(fileURLArrayResolve)
 })
+
+
+
 
 
 export default router;
