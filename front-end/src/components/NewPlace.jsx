@@ -102,6 +102,7 @@ const NewPlace = () => {
     }
   };
 
+  if (!user) return <Navigate to="/login" />;
   if (redirect) return <Navigate to="/account/places" />;
 
   return (

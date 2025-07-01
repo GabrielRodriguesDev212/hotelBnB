@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Place from "./pages/Place";
 import axios from "axios";
 import Account from "./pages/Account";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/account/:subpage/:action?/:id?" element={<Account />} />
+          <Route path="/place/:id" element={<Place />} />
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
