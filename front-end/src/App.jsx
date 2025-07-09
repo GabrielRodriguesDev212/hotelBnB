@@ -11,7 +11,7 @@ import { UserContextProvider } from "./contexts/UserContext";
 axios.defaults.baseURL =
   import.meta.env.MODE === "development"
     ? "http://localhost:4000/api"
-    : "http://localhost:4000/api";
+    : "https://hotelbnb-vng7.onrender.com/api";
 axios.defaults.withCredentials = true;
 
 function App() {
