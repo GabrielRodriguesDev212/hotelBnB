@@ -19,7 +19,10 @@ const Item = ({ place }) => {
       </div>
 
       <p>
-        <span className="font-semibold">R$ {place.price}</span> por noite
+        <span className="font-semibold">
+          R$ {place.price.toLocaleString("pt-BR")}
+        </span>{" "}
+        por noite
       </p>
     </Link>
   );

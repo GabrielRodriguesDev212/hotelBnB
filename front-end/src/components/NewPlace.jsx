@@ -70,13 +70,14 @@ const NewPlace = () => {
             checkout,
             guests,
           });
+          console.log(modifiedPlace);
         } catch (error) {
           console.log(error);
           alert("Erro ao tentar atualizar o novo lugar!");
         }
       } else {
         try {
-          const newPlaceDoc = await axios.post("/places", {
+          const newPlace = await axios.post("/places", {
             owner: user._id,
             title,
             city,
@@ -89,11 +90,12 @@ const NewPlace = () => {
             checkout,
             guests,
           });
+
+          console.log(newPlace);
         } catch (error) {
           console.log(error);
           alert("Erro ao tentar criar o novo lugar!");
         }
-        console.log(newPlaceDoc);
       }
 
       setRedirect(true);

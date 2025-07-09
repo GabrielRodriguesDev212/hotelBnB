@@ -2,19 +2,47 @@ import axios from "axios";
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useUserContext } from "../contexts/UserContext";
 import Perk from "../components/Perk";
+import Booking from "../components/Booking";
 
 const Place = () => {
   const { user } = useUserContext();
   const { id } = useParams();
   const [place, setPlace] = useState(null);
+  const [redirect, setRedirect] = useState(false);
   const [isOpen, setisOpen] = useState(false);
-  const [checkin, setCheckin] = useState();
-  const [checkout, setCheckout] = useState();
-  const [guest, setGuest] = useState();
+  const [checkin, setCheckin] = useState("");
+  const [checkout, setCheckout] = useState("");
+  const [guests, setGuest] = useState("");
+  const [booking, setBooking] = useState(null);
 
+  const numberOfDay = (date1, date2) => {
+    const data1GMT = date1 + "GMT-03:00";
+    const data2GMT = date2 + "GMT-03:00";
+
+    const dataCheckin = new Date(data1GMT);
+    const dataCheckout = new Date(data2GMT);
+
+    return (
+      (dataCheckout.getTime() - dataCheckin.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  };
+  useEffect(() => {
+    if (place) {
+      const axiosGet = async () => {
+        const { data } = await axios.get("/bookings");
+
+        setBooking(
+          data.filter((booking) => {
+            return booking.place._id === place._id;
+          })[0]
+        );
+      };
+      axiosGet();
+    }
+  }, [place]);
   useEffect(() => {
     if (id) {
       const axiosGet = async () => {
@@ -31,14 +59,29 @@ const Place = () => {
       : document.body.classList.remove("overflow-hidden");
   }, [isOpen]);
 
-  const handleBooking = (e) => {
+  const handleBooking = async (e) => {
     e.preventDefault();
 
-    if (checkin && checkout && guest) {
+    if (checkin && checkout && guests) {
+      const nights = numberOfDay(checkin, checkout);
+
+      const { data } = await axios.post("/bookings", {
+        place: id,
+        user: user._id,
+        price: place.price,
+        total: place.price * nights,
+        checkin,
+        checkout,
+        guests,
+        nights,
+      });
+      setRedirect(true);
+      console.log(data);
     } else {
       alert("Coloque os dados");
     }
   };
+  if (redirect) return <Navigate to="/account/bookings" />;
 
   if (!place) return <></>;
 
@@ -72,12 +115,18 @@ const Place = () => {
             <p>{place.city}</p>
           </div>
         </div>
+
+        {/* Booking */}
+
+        {booking ? <Booking bookings={booking} place={true} /> : <></>}
+
         {/* Grade de imagens */}
         <div className="grid sm:grid-cols-[2fr_1fr] sm:grid-rows-2 aspect-square sm:aspect-[3/2] rounded-2xl overflow-hidden gap-4 relative">
           {place.photos
             .filter((photo, index) => index < 3)
             .map((photo, index) => (
               <img
+                key={photo}
                 className={`${index === 0 ? "row-span-2  h-full object-center" : ""} aspect-square w-full sm:object-cover hover:opacity-75 transition text-center cursor-pointer`}
                 src={photo}
                 alt="Imagem da Acomodação"
@@ -117,6 +166,7 @@ const Place = () => {
                     className={` aspect-square w-full object-cover rounded-md `}
                     src={photo}
                     alt="Imagem da Acomodação"
+                    key={photo}
                   />
                 ))}
               </div>
@@ -131,7 +181,7 @@ const Place = () => {
           </div>
         </div>
         {/* Colunas */}
-        <div className="grid md:grid-cols-2 grid-cols-1">
+        <div className={`grid ${booking ? "" : "md:grid-cols-2 grid-cols-1"}`}>
           <div className="order-2 md:order-none p-6 flex flex-col gap-5">
             <div className="flex flex-col gap-2">
               <p className="sm:text-2xl text-lg font-bold">Descrição</p>
@@ -150,7 +200,7 @@ const Place = () => {
               <p className="sm:text-2xl text-lg font-bold">Diferenciais</p>
               <div className="flex flex-col gap-2">
                 {place.perks.map((perk) => (
-                  <div className="flex items-center gap-2">
+                  <div key={perk} className="flex items-center gap-2">
                     <Perk perk={perk} />
                   </div>
                 ))}
@@ -158,73 +208,77 @@ const Place = () => {
             </div>
           </div>
 
-          <form className="order-1 md:order-none flex flex-col gap-4 justify-self-center self-center border border-gray-300 rounded-2xl py-2 px-4 sm:py-4 sm:px-8">
-            <p className="sm:text-2xl text-lg font-bold text-center">
-              Preço: R$ {place.price} por noite
-            </p>
-            {/* Check-in e Check-out */}
-            <div className="flex flex-col sm:flex-row">
-              <div className="flex flex-col border border-gray-300  rounded-tl-2xl  rounded-tr-2xl sm:rounded-tr-none sm:rounded-bl-2xl px-4 py-2">
-                <label htmlFor="checkin" className="font-bold">
-                  Check-In
-                </label>
-                <input
-                  className="w-full sm:w-auto"
-                  type="date"
-                  name="checkin"
-                  id="checkin"
-                  value={checkin}
-                  onChange={(e) => setCheckin(e.target.value)}
-                />
+          {booking ? (
+            ""
+          ) : (
+            <form className="order-1 md:order-none flex flex-col gap-4 justify-self-center self-center border border-gray-300 rounded-2xl py-2 px-4 sm:py-4 sm:px-8">
+              <p className="sm:text-2xl text-lg font-bold text-center">
+                Preço: R$ {place.price} por noite
+              </p>
+              {/* Check-in e Check-out */}
+              <div className="flex flex-col sm:flex-row">
+                <div className="flex flex-col border border-gray-300  rounded-tl-2xl  rounded-tr-2xl sm:rounded-tr-none sm:rounded-bl-2xl px-4 py-2">
+                  <label htmlFor="checkin" className="font-bold">
+                    Check-In
+                  </label>
+                  <input
+                    className="w-full sm:w-auto"
+                    type="date"
+                    name="checkin"
+                    id="checkin"
+                    value={checkin}
+                    onChange={(e) => setCheckin(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col border border-gray-300 sm:border-l-0 border-t-0 sm:border-t-1  sm:rounded-tr-2xl rounded-br-2xl rounded-bl-2xl  sm:rounded-bl-none px-4 py-2">
+                  <label htmlFor="checkout" className="font-bold">
+                    Check-Out
+                  </label>
+                  <input
+                    className="w-full sm:w-auto"
+                    type="date"
+                    name="checkout"
+                    id="checkout"
+                    value={checkout}
+                    onChange={(e) => setCheckout(e.target.value)}
+                  />
+                </div>
               </div>
-              <div className="flex flex-col border border-gray-300 sm:border-l-0 border-t-0 sm:border-t-1  sm:rounded-tr-2xl rounded-br-2xl rounded-bl-2xl  sm:rounded-bl-none px-4 py-2">
-                <label htmlFor="checkout" className="font-bold">
-                  Check-Out
-                </label>
-                <input
-                  className="w-full sm:w-auto"
-                  type="date"
-                  name="checkout"
-                  id="checkout"
-                  value={checkout}
-                  onChange={(e) => setCheckout(e.target.value)}
-                />
-              </div>
-            </div>
 
-            {/* Convidados */}
-            <div className="flex flex-col border border-gray-300 rounded-2xl px-4 py-2 ">
-              <label
-                htmlFor="convidados"
-                className="font-bold flex flex-col gap-2 text-center"
-              >
-                Nº de Convidados
-                <input
-                  className="border border-gray-300 rounded-2xl px-4 py-2"
-                  type="number"
-                  placeholder="2"
-                  id="convidados"
-                  value={guest}
-                  onChange={(e) => setGuest(e.target.value)}
-                />
-              </label>
-            </div>
-            {user ? (
-              <button
-                onClick={handleBooking}
-                className="bg-primary-400 hover:bg-primary-600 rounded-full w-full py-2 px-4 text-white font-bold cursor-pointer transition text-center"
-              >
-                Reservar
-              </button>
-            ) : (
-              <Link
-                to={"/login"}
-                className="bg-gray-400 hover:bg-gray-600 rounded-full w-full py-2 px-4 text-white font-bold cursor-pointer transition text-center"
-              >
-                Faça seu login
-              </Link>
-            )}
-          </form>
+              {/* Convidados */}
+              <div className="flex flex-col border border-gray-300 rounded-2xl px-4 py-2 ">
+                <label
+                  htmlFor="convidados"
+                  className="font-bold flex flex-col gap-2 text-center"
+                >
+                  Nº de Convidados
+                  <input
+                    className="border border-gray-300 rounded-2xl px-4 py-2"
+                    type="number"
+                    placeholder="2"
+                    id="convidados"
+                    value={guests}
+                    onChange={(e) => setGuest(e.target.value)}
+                  />
+                </label>
+              </div>
+              {user ? (
+                <button
+                  onClick={handleBooking}
+                  className="bg-primary-400 hover:bg-primary-600 rounded-full w-full py-2 px-4 text-white font-bold cursor-pointer transition text-center"
+                >
+                  Reservar
+                </button>
+              ) : (
+                <Link
+                  to={"/login"}
+                  className="bg-gray-400 hover:bg-gray-600 rounded-full w-full py-2 px-4 text-white font-bold cursor-pointer transition text-center"
+                >
+                  Faça seu login
+                </Link>
+              )}
+            </form>
+          )}
         </div>
 
         {/* Extras */}
