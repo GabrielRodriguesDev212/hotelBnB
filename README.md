@@ -1,5 +1,7 @@
 # 🏨 HotelBnB
 
+- [Acesse aqui](https://hotelbnb-vng7.onrender.com)
+
 Um sistema de reservas estilo BnB desenvolvido com **React.js**, **Node.js**, **Express**, **MongoDB** e **Tailwind CSS**. O objetivo do projeto é permitir que usuários possam cadastrar hospedagens, visualizar acomodações disponíveis e realizar reservas de forma simples e eficiente.
 
 ## 🚀 Tecnologias Utilizadas
