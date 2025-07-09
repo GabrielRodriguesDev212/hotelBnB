@@ -87,12 +87,12 @@ export const uploadImage = () => {
         },
         filename: function (req, file, cb) {
             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-            const extension = getExtension(file.originalname)
+            const { extension } = getExtension(file.originalname)
             cb(null, `${uniqueSuffix}.${extension}`)
         }
     })
 
 
-    return multer({ storage: storage })
+    return multer({ storage })
 }
 

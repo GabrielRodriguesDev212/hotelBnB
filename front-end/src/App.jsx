@@ -8,7 +8,10 @@ import Account from "./pages/Account";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserContextProvider } from "./contexts/UserContext";
 
-axios.defaults.baseURL = import.meta.env.VITE_AXIOS_BASE_URL;
+axios.defaults.baseURL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:4000/api"
+    : "http://localhost:4000/api";
 axios.defaults.withCredentials = true;
 
 function App() {
